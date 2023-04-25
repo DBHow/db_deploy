@@ -5,10 +5,18 @@ env:
     AWS_REGION: "us-east-1"
 phases:
   install:
+    runtime-versions:
+      python: 3.9
+      
+  pre_build:
     commands:
       - yum install amazon-linux-extras
-
+      - python3 -m venv /root/venv
+      - . /root/venv/bin/activate
+      - pip3 install pytest && pip3 install poetry
+      - poetry install
+      
   build:
     commands:
-    - chmod 0700 scripts/*py
-    - . ./scripts/codedeploy-pg.py
+      - echo Running tests
+      - pytest -s
