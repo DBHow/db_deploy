@@ -10,7 +10,6 @@ phases:
       
   pre_build:
     commands:
-      - yum install amazon-linux-extras
       - python3 -m venv /root/venv
       - . /root/venv/bin/activate
       - pip3 install pytest && pip3 install poetry
