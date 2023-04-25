@@ -1,4 +1,4 @@
-import os
+import os,sys
 
 def main(path):
   dir_list = os.listdir(path)
