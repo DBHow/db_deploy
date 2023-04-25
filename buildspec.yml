@@ -1,0 +1,14 @@
+---
+version: '0.2'
+env:
+  variables:
+    AWS_REGION: "us-east-1"
+phases:
+  install:
+    commands:
+      - yum install amazon-linux-extras
+
+  build:
+    commands:
+    - chmod 0700 scripts/*py
+    - . ./scripts/codedeploy-pg.py
