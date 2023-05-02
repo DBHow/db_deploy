@@ -47,7 +47,7 @@ def main(dir_name, deploy_file_name):
         description = deploy_metadata.get('description')
         username_path = deploy_metadata.get('usernamePath')
         password_path = deploy_metadata.get('passwordPath')
-        endpoint = deploy_metadata.get('targetEndpoint')
+        host = deploy_metadata.get('targetHost')
         database = deploy_metadata.get('targetDatabase')
         
         # Retrieves username/password from parameter store
@@ -61,7 +61,7 @@ def main(dir_name, deploy_file_name):
         update_deployment = 'UPDATE dba_admin.deployments SET end_time = %s WHERE project = %s AND version = %s'
         check_existence = 'SELECT count(*) FROM dba_admin.deployment_files WHERE project = %s AND version = %s and hash_value = %s'
         insert_deployment_file = 'INSERT INTO dba_admin.deployment_files (project, version, filename, description, hash_value, deploy_time) VALUES (%s, %s, %s, %s, %s, %s)'
-        dsn = f'host={endpoint} port=5432 dbname={database} user={username} password={password}'
+        dsn = f'host={host} port=5432 dbname={database} user={username} password={password}'
 
         conn = None
         
