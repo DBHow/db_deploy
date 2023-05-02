@@ -1,11 +1,22 @@
 from sqlite3 import DatabaseError
 import sys, os, json, hashlib
-import boto3, psycopg2
+import boto3, psycopg2, smtplib
+from email.message import EmailMessage
 from operator import attrgetter
 from datetime import datetime, timezone
 from script_file import script_file
 
 ssm_client = boto3.client('ssm', 'us-east-1')
+
+def send_email(subject, body):
+    msg = EmailMessage()
+    msg.set_content(body)
+    msg['Subject'] = subject
+    msg['From'] = 'gang.hao@austin.utexas.edu'
+    msg['To'] = 'gang.hao@austin.utexas.edu'
+    smtp = smtplib.SMTP('opis.iq.utexas.edu')
+    smtp.send_message(msg)
+    smtp.quit()
 
 def hashfile(file):
     BUF_SIZE = 65536
@@ -102,10 +113,11 @@ def main(dir_name, deploy_file_name):
             cur.execute(update_deployment, (datetime.now(timezone.utc), project, version))
             print(f'Finishing the deployment...')
             conn.commit()
-            
+            send_email(f'Succeeded to deploy {project}-{version}', f'')
         except (Exception, psycopg2.DatabaseError) as error:
             conn.rollback()
             print(error)
+            send_email(f'Error in deploying {project}-{version}', f'{error}')
         finally:
             if conn is not None:
                 conn.close()
