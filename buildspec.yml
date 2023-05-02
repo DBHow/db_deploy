@@ -17,5 +17,5 @@ phases:
       
   build:
     commands:
-      - echo Running tests
-      - python ./scripts/codedeploy-pg.py $CODEBUILD_SRC_DIR_DB_Code deploy_1.0.json
+      - echo Running...
+      - python ./scripts/codedeploy-pg.py $CODEBUILD_SRC_DIR_DB_Code $DEPLOY_METADATA_FILE
