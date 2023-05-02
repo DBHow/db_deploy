@@ -55,6 +55,7 @@ def main(dir_name, deploy_file_name):
         username = response['Parameter']['Value']
         response = ssm_client.get_parameter(Name=password_path, WithDecryption=True)
         password = response['Parameter']['Value']
+        print(f'Retrieved username/password from parameter store')
         
         # Creates a record for this deployment
         insert_deployment = 'INSERT INTO dba_admin.deployments (project, version, description, start_time) VALUES (%s, %s, %s, %s)'
@@ -71,7 +72,8 @@ def main(dir_name, deploy_file_name):
 
             # Log the start of deployment
             cur.execute(insert_deployment, (project, version, description, datetime.now(timezone.utc)))
-
+            print(f'Starting the deployment...')
+            
             files = deploy_metadata.get('files')
             script_files = []    
 
@@ -90,12 +92,15 @@ def main(dir_name, deploy_file_name):
 
                 # Execute the script file
                 cur.execute(open(file.filepath, 'r').read())
+                print(f'Deployed {file.name}')
 
                 # Log the deployment of the file
                 cur.execute(insert_deployment_file, (project, version, file.name, file.description, hash_value, datetime.now(timezone.utc)))
+                print(f'Recorded the deployment of {file.name}')
 
             # Log the end of deployment
             cur.execute(update_deployment, (datetime.now(timezone.utc), project, version))
+            print(f'Finishing the deployment...')
             conn.commit()
             
         except (Exception, psycopg2.DatabaseError) as error:
