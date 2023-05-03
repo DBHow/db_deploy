@@ -141,13 +141,13 @@ def main(dir_name, deploy_file_name):
                     current_file = file.name
                     hash_value = hashfile(file.filepath)
 
-                    # Log the deployment of the file
-                    cur.execute(insert_deployment_file, (project, version, file.name, file.description, hash_value, datetime.now(timezone.utc)))
-
                     # Execute the script file
                     cur.execute(open(file.filepath).read())
                     print(f'Deployed {current_file}')
-
+                    
+                    # Log the deployment of the file
+                    cur.execute(insert_deployment_file, (project, version, file.name, file.description, hash_value, datetime.now(timezone.utc)))
+                    
                 conn.commit()
             except (Exception, psycopg2.DatabaseError) as err:
                 conn.rollback()
@@ -157,7 +157,11 @@ def main(dir_name, deploy_file_name):
             cur.execute(update_deployment, (datetime.now(timezone.utc), status, project, version))
             print(f'Finishing the deployment...')
             conn.commit()
-            send_email(f'Succeeded to deploy {project}-{version}', f'')
+
+            if status == 'succeeded':
+                send_email(f'Succeeded to deploy {project}-{version}', f'')
+            else:
+                send_email(f'Error in deploying {project}-{version}', f'{status}')
         except (Exception, psycopg2.DatabaseError) as error:
             conn.rollback()
             print(error)
