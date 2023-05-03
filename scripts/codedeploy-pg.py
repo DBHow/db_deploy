@@ -76,7 +76,7 @@ def main(dir_name, deploy_file_name):
         # Parses the json deploy file 
         # Retrieves information from parameter store
         # Loads data to script_file class
-        f = open(deply_name, encoding='utf-8')
+        f = open(deploy_name, encoding='utf-8')
         deploy_metadata = json.load(f)
 
         project = deploy_metadata.get('project')
@@ -110,7 +110,7 @@ def main(dir_name, deploy_file_name):
     except Exception as e:
         msg = f'Error in processing deploy metadata file {deploy_file_name}: {e}'
         print(msg)
-        send_email(f'Error in deploying {project}-{version}', msg)
+        send_email(f'Error in process {deploy_file_name}', msg)
     finally:
         if f is not None:
             f.close()
